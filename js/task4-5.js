@@ -1,41 +1,51 @@
 /*
-Задача 3-5
-Оператор in и метод push
-Напиши функцию getAllPropValues(arr, prop), которая получает массив объектов и имя свойства.
+Задача 4-5
+bind для замены this в методах объекта
+Оформи вызов метода invokeInventoryAction таким образом, чтобы в качестве this для методов
 
-Функция возвращает массив значений определенного свойства prop из каждого объекта в массиве.
-
-Используй метод push для добавления значения в массив и оператор in для проверки наличия свойства в объекте.
+inventory.add
+inventory.remove выступал объект inventory
 */
 
-function getAllPropValues(array, prop) {
-  "use strict";
-  // Write code under this line
-  const result = [];
-  for (const key of array) {
-    if (prop in key) {
-      result.push(key[prop]);
-    }
-  }
-  return result;
-}
+const inventory = {
+  items: ["Knife", "Gas mask"],
+  add(itemName) {
+    this.items.push(itemName);
+    return `Adding ${itemName} to inventory`;
+  },
+  remove(itemName) {
+    this.items = this.items.filter((item) => item !== itemName);
+    return `Removing ${itemName} from inventory`;
+  },
+};
 
-// Объекты и ожидаемый результат
-const products = [
-  { name: "Радар", price: 1300, quantity: 4 },
-  { name: "Радар", price: 1280, quantity: 2 },
-  { name: "Радар", price: 1320, quantity: 1 },
-  { name: "Сканер", price: 2700, quantity: 1 },
-  { name: "Сканер", price: 2500, quantity: 3 },
-  { name: "Дроид", price: 400, quantity: 7 },
-  { name: "Захват", price: 1200, quantity: 2 },
-];
+const invokeInventoryAction = function (itemName, action) {
+  const act = action(itemName);
+  const msg = `Invoking action on ${itemName}`;
+  return { act, msg };
+};
 
-console.log(getAllPropValues(products, "name"));
-// ['Радар', 'Радар', 'Радар', 'Сканер', 'Сканер', 'Дроид', 'Захват']
+const invokeAdd = invokeInventoryAction(
+  "Medkit",
+  inventory.add.bind(inventory) // Write code in this line
+);
+const arrayAdd = [...inventory.items];
 
-console.log(getAllPropValues(products, "quantity"));
-// [4, 2, 1, 1, 3, 7, 2]
+console.log(invokeAdd);
+//{ act: 'Adding Medkit to inventory', msg: 'Invoking action on Medkit' }
 
-console.log(getAllPropValues(products, "category"));
-//  []
+console.log(arrayAdd);
+// ['Knife', 'Gas mask', 'Medkit']
+
+const invokeRemove = invokeInventoryAction(
+  "Gas mask",
+  inventory.remove.bind(inventory) // Write code in this line
+);
+
+const arrayRemove = [...inventory.items];
+
+console.log(invokeRemove);
+//{ act: 'Removing Gas mask from inventory', msg: 'Invoking action on Gas mask' }
+
+console.log(arrayRemove);
+// ['Knife', 'Medkit']
